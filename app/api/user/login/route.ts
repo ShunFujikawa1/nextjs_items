@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
                 .setProtectedHeader({ alg: "HS256" })
                 .setExpirationTime("1d")
                 .sign(secretKey);
-                console.log("発行したトークン:", token);
-            return new Response(JSON.stringify({ message: "ログイン成功", user: data }), { status: 200 });
+                //console.log("発行したトークン:", token);
+            return new Response(JSON.stringify({ message: "ログイン成功", token: token }), { status: 200 });
         }
         else {
             return new Response(JSON.stringify({ message: "パスワードが間違っています" }), { status: 401 });

@@ -2,8 +2,8 @@ import { jwtVerify } from "jose";
 import { NextResponse } from "next/server";
 
 export async function middleware(request: Request) {
-    //const token = request.headers.get("Authorization")?.split(" ")[1];
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImR1bW15QGdtYWlsLmNvbSIsImV4cCI6MTc2MTQ1NTA4N30.RfI3w8fg2PU09U9IEuPRV0-H3ylGtI3LEcLOBMUw1NM"
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    //const token = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImR1bW15QGdtYWlsLmNvbSIsImV4cCI6MTc2MTQ1NTA4N30.RfI3w8fg2PU09U9IEuPRV0-H3ylGtI3LEcLOBMUw1NM"
     if (!token) {
         return NextResponse.json({ message: "認証トークンがありません" }, { status: 401 });
     }

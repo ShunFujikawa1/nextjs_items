@@ -13,9 +13,9 @@ export async function GET(request: Request, context: any) {
         const { data, error } = await supabase.from("items").select("*").eq("id", id).single();
         if (error) throw error;
         console.log("singleItem:", data);
-        return NextResponse.json({ message: "アイテム読み取り成功（オール）", singleItem: data });
+        return NextResponse.json({ message: "アイテム読み取り成功（シングル）", singleItem: data });
     } catch (err) {
         console.error("アイテム読み取り失敗:", err);
-        return NextResponse.json({ message: "アイテム読み取り失敗（オール）" }, { status: 500 });
+        return NextResponse.json({ message: "アイテム読み取り失敗（シングル）" }, { status: 500 });
     }
 }
