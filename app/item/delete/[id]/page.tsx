@@ -37,7 +37,7 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
             //console.log("アイテムのid", id);
 
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/create`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${id}`);
                 if (!response.ok) throw new Error('Failed to fetch item');
                 
                 const jsonData = await response.json();
