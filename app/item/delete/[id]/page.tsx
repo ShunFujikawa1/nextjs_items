@@ -1,45 +1,53 @@
+// app/item/delete/[id]/page.tsx
 "use client"
-// ★ 修正点1: 'use' フックをインポート
-import { useState, useEffect, use } from "react"; 
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import useAuth from "../../../utils/useAuth";
-// useSearchParams は不要なので削除
 
-// ★ 修正点2: props の型を Promise<{ id: string }> に変更
-//            (名前を paramsPromise に変更すると分かりやすいです)
 const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }> }) => {
-    
-    // ★ 修正点3: 'use' フックを使って Promise を解決する
-    // これにより、'params' は { id: "..." } という通常のオブジェクトになる
+
     const params = use(paramsPromise);
 
-    const[title, setTitle] = useState("");
-    const[description, setDescription] = useState("");
-    const[price, setPrice] = useState("");
-    const[image, setImage] = useState("");
-    const[email, setEmail] = useState("");
-    const[loading, setLoading] = useState(false);
+    const [title, setTitle] = useState<string | null>(null);
+    const [price, setPrice] = useState<string | number | null>(null);
+    const [image, setImage] = useState<string | null>(null);
+    const [description, setDescription] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const router = useRouter();
     const { loginUserEmail } = useAuth();
 
-    // ★ 修正点4: 依存配列を 'params.id' に変更
     useEffect(() => {
         const getSingleItem = async() => {
-            // ★ 修正点5: 解決済みの 'params.id' を使用
-            const id = params.id; 
-            
+            setLoading(true);
+            setError(null);
+            const id = params.id;
+
             if (!id) {
-                console.log("IDがparamsから取得できません");
+                console.error("IDがparamsから取得できません");
+                setError("アイテムIDが見つかりません。");
+                setLoading(false);
                 return;
             }
-            //console.log("アイテムのid", id);
+
+            const apiUrl = process.env.NEXT_PUBLIC_URL;
+            if (!apiUrl) {
+                console.error("NEXT_PUBLIC_URL is not set");
+                setError("設定エラーが発生しました。");
+                setLoading(false);
+                return;
+            }
 
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${id}`);
-                if (!response.ok) throw new Error('Failed to fetch item');
-                
+                // 正しいエンドポイント
+                const response = await fetch(`${apiUrl}/api/item/readsingle/${id}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch item (${response.status})`);
+                }
+
                 const jsonData = await response.json();
                 const singleItem = jsonData.singleItem;
                 if (singleItem) {
@@ -47,64 +55,103 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
                     setDescription(singleItem.description);
                     setPrice(singleItem.price);
                     setImage(singleItem.image);
-                    setEmail(singleItem.email); 
-                    setLoading(true);
+                    setEmail(singleItem.email);
+                } else {
+                    throw new Error('Item not found in response');
                 }
-            } catch (error) {
-                console.error("アイテム取得失敗:", error);
-                alert("アイテムの読み込みに失敗しました。");
+            } catch (err) {
+                console.error("アイテム取得失敗:", err);
+                setError("アイテムの読み込みに失敗しました。");
+            } finally {
+                setLoading(false);
             }
         };
         getSingleItem();
-    }, [params.id]); // 依存配列を params.id に変更
+    }, [params.id]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("description", description);
-        formData.append("price", price);
-        formData.append("image", image);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/delete/${params.id}`, {
-            method: "DELETE",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${JSON.parse(localStorage.getItem("token") || '""')}`
-            },
-            body: JSON.stringify({
-                email: loginUserEmail
-            })
-        });
-        if (response.ok) {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("ログインが必要です。");
+            router.push('/user/login');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/delete/${params.id}`, {
+                method: "DELETE",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${JSON.parse(token)}`
+                },
+                 body: JSON.stringify({
+                     email: loginUserEmail
+                 })
+            });
+
             const data = await response.json();
-            alert("アイテム削除成功: " + data.message);
-            router.push("/");
-        } else {
-            alert("アイテム削除失敗");
+
+            if (response.ok) {
+                alert("アイテム削除成功: " + data.message);
+                router.push("/");
+            } else {
+                alert(`アイテム削除失敗: ${data.message || response.statusText}`);
+                if (response.status === 401) {
+                    router.push('/user/login');
+                }
+            }
+        } catch (err) {
+            console.error("削除リクエストエラー:", err);
+            alert("アイテム削除中にエラーが発生しました。");
         }
     }
-    if(loading) {
-    if(loginUserEmail == email) {
-  return (
-    <div>
-        アイテム削除ページ
-        <form onSubmit={handleSubmit}>
-            <h3>￥{price}</h3>
-            <Image src={image} width={750} height={500} alt="item-image" priority/>
-            <h3>¥{price}</h3>
-            <p>{description}</p>
-            <button type="submit">削除</button>
-        </form>
-    </div>
-  )
-}
-else {
-    return <h1>ログインしてください</h1>;   
-}
+
+    // ----- JSX部分 -----
+    if (loading) {
+        // スタイルは globals.css 次第
+        return <h1 className="page-title">読み込み中...</h1>;
     }
-else {
-    return <h1>読み込み中...</h1>;  
-}
+
+    if (error) {
+         // スタイルは globals.css 次第 (例: text-red-500 の代わりのクラス)
+        return <h1 className="page-title error-message">{error}</h1>; // error-message クラスを CSS で定義
+    }
+
+    if (!loginUserEmail || loginUserEmail !== email) {
+        // スタイルは globals.css 次第
+        return <h1 className="page-title error-message">このアイテムを削除する権限がありません。ログインしてください。</h1>;
+    }
+
+    return (
+        // delete-page クラスを適用
+        <div className="delete-page">
+            <h1 className="page-title">アイテム削除確認</h1>
+            {/* 中身の text-center は .delete-page に移動 */}
+            <div>
+                {image && (
+                    <Image
+                        src={image}
+                        width={400}
+                        height={300}
+                        alt={title || "item image"}
+                        priority
+                        // className削除
+                    />
+                )}
+                {/* スタイルは globals.css の h2, h3, p に依存 */}
+                <h2>{title ?? 'タイトルなし'}</h2>
+                <h3>￥{price ?? '価格未定'}</h3>
+                <p className="description">{description ?? '説明なし'}</p> {/* クラス追加 */}
+                <form onSubmit={handleSubmit}>
+                    {/* 警告文 */}
+                    <p className="warning">本当にこのアイテムを削除しますか？<br/>この操作は元に戻せません。</p> {/* クラス追加 */}
+                    {/* ボタンのスタイルは globals.css の .delete-page button に依存 */}
+                    <button type="submit">削除する</button>
+                </form>
+            </div>
+        </div>
+    );
 }
 export default DeleteItem;
