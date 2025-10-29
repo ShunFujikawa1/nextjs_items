@@ -1,10 +1,11 @@
 import { useState } from "react"
 
 const ImgInput = (props:any) => {
-    const [imageFile, setImageFile] = useState("")
+    const [imageFile, setImageFile] = useState<File | null>(null)
 
     const handleClick = async() => {
         try{
+            if (!imageFile) return
             const data = new FormData()
             data.append("file", imageFile)
             data.append("upload_preset", "nextImages")
@@ -19,7 +20,8 @@ const ImgInput = (props:any) => {
         }
     return (
         <div className="img-input">
-            <input type="file" onChange= {(e)=> setImageFile(e.target.files[0])} accept="image/png, image/jpg"/>
+
+            <input type="file" onChange= {(e)=> e.target.files && setImageFile(e.target.files[0])} accept="image/png, image/jpg"/>
             <button onClick={handleClick} disabled={!imageFile}>画像Upload</button>
         </div>
     )
