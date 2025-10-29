@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import useAuth from "../../utils/useAuth";
-import { log } from "console";
+import ImgInput from "../../components/imgInput";
 const CreateItem = () => {
     const[title, setTitle] = useState("");
     const[description, setDescription] = useState("");
@@ -35,7 +35,7 @@ const CreateItem = () => {
         if (response.ok) {
             const data = await response.json();
             alert("アイテム作成成功: " + data.message);
-            router.push("/item/list");
+            router.push("/");
         } else {
             alert("アイテム作成失敗");
         }
@@ -44,7 +44,8 @@ const CreateItem = () => {
     if(loginUserEmail) {
   return (
     <div>
-        <h1 className = "page-title">アイテム作成ページ</h1>
+        <h1 className = "page-title">アイテム作成</h1>
+        <ImgInput setImage={setImage} />
         <form onSubmit={handleSubmit}>
             <input value={title} onChange={(e) => setTitle(e.target.value)} type="text" name="title" placeholder="アイテム名" required/>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} name="description" placeholder="アイテム説明" required/>

@@ -19,6 +19,7 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
     const[price, setPrice] = useState("");
     const[image, setImage] = useState("");
     const[email, setEmail] = useState("");
+    const[loading, setLoading] = useState(false);
 
     const router = useRouter();
     const { loginUserEmail } = useAuth();
@@ -47,6 +48,7 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
                     setPrice(singleItem.price);
                     setImage(singleItem.image);
                     setEmail(singleItem.email); 
+                    setLoading(true);
                 }
             } catch (error) {
                 console.error("アイテム取得失敗:", error);
@@ -82,6 +84,7 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
             alert("アイテム削除失敗");
         }
     }
+    if(loading) {
     if(loginUserEmail == email) {
   return (
     <div>
@@ -98,6 +101,10 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
 }
 else {
     return <h1>ログインしてください</h1>;   
+}
+    }
+else {
+    return <h1>読み込み中...</h1>;  
 }
 }
 export default DeleteItem;

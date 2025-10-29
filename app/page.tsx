@@ -3,7 +3,7 @@ import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
 const getAllItems = async() => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/create`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/readall`);
     if (!response.ok) {
         console.error("fetch error:", response.status, await response.text());
         return [];

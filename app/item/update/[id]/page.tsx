@@ -19,6 +19,7 @@ const UpdateItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
     const[price, setPrice] = useState("");
     const[image, setImage] = useState("");
     const[email, setEmail] = useState("");
+    const[loading, setLoading] = useState(false);
     const router = useRouter();
     const { loginUserEmail } = useAuth();
 
@@ -46,6 +47,8 @@ const UpdateItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
                     setPrice(singleItem.price);
                     setImage(singleItem.image);
                     setEmail(singleItem.email); 
+                    setLoading(true);
+                    
                 }
             } catch (error) {
                 console.error("アイテム取得失敗:", error);
@@ -85,6 +88,7 @@ const UpdateItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
             alert("アイテム編集失敗");
         }
     }
+    if(loading) {
     if(loginUserEmail == email) {
   return (
     <div>
@@ -101,6 +105,9 @@ const UpdateItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
 }
 else {
     return <h1>このアイテムを編集する権限がありません。</h1>;
+}}
+else {
+    return <h1>読み込み中...</h1>;
 }
 }
 
