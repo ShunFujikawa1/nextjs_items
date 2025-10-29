@@ -218,13 +218,7 @@ header * li a:hover{
   display: block; /* 余白防止 */
 }
 /* 画像を囲むdivのスタイル */
-.grid-container-si > div:first-child {
-  /* 特に指定不要かも */
-}
-/* テキストとボタンを囲むdivのスタイル */
-.grid-container-si > div:last-child {
- /* 必要に応じてスタイル追加 (例: text-align) */
-}
+
 
 
 .grid-container-si h2{
@@ -290,10 +284,6 @@ header * li a:hover{
   max-width: 100%; /* 幅がはみ出ないように */
   height: auto;
   margin-bottom: 1.5rem;
-}
-
-.delete-page h1{ /* page-titleクラスを使うので不要かも */
-  /* margin-bottom: 1.5rem; */
 }
 
 .delete-page h2{
