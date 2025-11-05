@@ -1,14 +1,3 @@
-// tailwind.config.ts
-import type { Config } from 'tailwindcss';
-
-const config: Config = {
-  content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-};
-export default config;
+ @import "tailwindcss";
+/* Note: You may need to change the path to fit your project structure */
+ @config "../../tailwind.config.js";
