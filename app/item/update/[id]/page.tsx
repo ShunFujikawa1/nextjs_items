@@ -4,14 +4,10 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import useAuth from "../../../utils/useAuth";
 import { log } from "console";
-// useSearchParams は不要なので削除
 
-// ★ 修正点2: props の型を Promise<{ id: string }> に変更
-//            (名前を paramsPromise に変更すると分かりやすいです)
 const UpdateItem = ({ params: paramsPromise }: { params: Promise<{ id: string }> }) => {
     
     // ★ 修正点3: 'use' フックを使って Promise を解決する
-    // これにより、'params' は { id: "..." } という通常のオブジェクトになる
     const params = use(paramsPromise);
 
     const[title, setTitle] = useState("");
@@ -33,7 +29,6 @@ const UpdateItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
                 console.log("IDがparamsから取得できません");
                 return;
             }
-            //console.log("アイテムのid", id);
 
             try {
                 const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/readsingle/${id}`);
@@ -60,11 +55,7 @@ const UpdateItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("description", description);
-        formData.append("price", price);
-        formData.append("image", image);
+        // ... (省略)
         const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/item/update/${params.id}`, {
             method: "PUT",
             headers: {
@@ -88,27 +79,33 @@ const UpdateItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
             alert("アイテム編集失敗");
         }
     }
+
+    // ★ フォームスタイル (globals.css の input, textarea, button, .page-title)
+    const inputStyles = "w-full p-[5px] mb-5 border border-[#ccc] rounded-[5px] box-border text-base font-inherit";
+    const textareaStyles = "w-full p-[5px] mb-5 border border-[#ccc] rounded-[5px] box-border resize-y text-base font-inherit";
+    const buttonStyles = "bg-[#858585] text-base text-white p-[6px] border-none rounded-[5px] cursor-pointer w-full opacity-80-hover bg-gradient-to-br-hover from-[#FF63A4]-hover to-[#FFD873]-hover";
+    const pageTitleStyles = "text-3xl font-normal leading-[35px] mt-[30px] mb-10 text-center";
+
     if(loading) {
-    if(loginUserEmail == email) {
-  return (
-    <div>
-        <h1 className = "page-title">アイテム編集ページ</h1>
-        <form onSubmit={handleSubmit}>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} type="text" name="title" placeholder="アイテム名" required/>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} name="description" placeholder="アイテム説明" required/>
-            <input value={price} onChange={(e) => setPrice(e.target.value)} type="text" name="price" placeholder="価格" required/>
-            <input value={image} onChange={(e) => setImage(e.target.value)} type="text" name="image" placeholder="画像URL" required/>
-            <button type="submit">編集</button>
-        </form>
-    </div>
-  )
-}
-else {
-    return <h1>このアイテムを編集する権限がありません。</h1>;
-}}
-else {
-    return <h1>読み込み中...</h1>;
-}
+      if(loginUserEmail == email) {
+        return (
+          <div>
+              <h1 className = {pageTitleStyles}>アイテム編集ページ</h1>
+              <form onSubmit={handleSubmit}>
+                  <input value={title} onChange={(e) => setTitle(e.target.value)} type="text" name="title" placeholder="アイテム名" required className={inputStyles}/>
+                  <textarea value={description} onChange={(e) => setDescription(e.target.value)} name="description" placeholder="アイテム説明" required className={textareaStyles}/>
+                  <input value={price} onChange={(e) => setPrice(e.target.value)} type="text" name="price" placeholder="価格" required className={inputStyles}/>
+                  <input value={image} onChange={(e) => setImage(e.target.value)} type="text" name="image" placeholder="画像URL" required className={inputStyles}/>
+                  <button type="submit" className={buttonStyles}>編集</button>
+              </form>
+          </div>
+        )
+      } else {
+          return <h1 className={pageTitleStyles}>このアイテムを編集する権限がありません。</h1>;
+      }
+    } else {
+        return <h1 className={pageTitleStyles}>読み込み中...</h1>;
+    }
 }
 
 export default UpdateItem;

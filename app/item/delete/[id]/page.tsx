@@ -21,6 +21,7 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
     const { loginUserEmail } = useAuth();
 
     useEffect(() => {
+        // ... (getSingleItem ロジック 変更なし)
         const getSingleItem = async() => {
             setLoading(true);
             setError(null);
@@ -42,7 +43,6 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
             }
 
             try {
-                // 正しいエンドポイント
                 const response = await fetch(`${apiUrl}/api/item/readsingle/${id}`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch item (${response.status})`);
@@ -70,6 +70,7 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
     }, [params.id]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        // ... (handleSubmit ロジック 変更なし)
         e.preventDefault();
         const token = localStorage.getItem("token");
         if (!token) {
@@ -108,27 +109,37 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
         }
     }
 
-    // ----- JSX部分 -----
+    // ★ スタイルを定義
+    const pageTitleStyles = "text-3xl font-normal leading-[35px] mt-[30px] mb-10 text-center";
+    const errorStyles = `${pageTitleStyles} text-red-600`; // (任意の色)
+    
+    // ★ 汎用ボタンスタイル (globals.css の button)
+    const baseButton = "text-base text-white p-[6px] border-none rounded-[5px] cursor-pointer w-full";
+    // ★ 削除ボタン固有のスタイル (globals.css の .delete-page button)
+    const deleteButtonStyles = [
+        baseButton,
+        "bg-[#dc3545]", // background
+        "bg-[#c82333]-hover", // hover:background
+        "opacity-100-hover", // hover:opacity (グラデーション上書き)
+    ].join(" ");
+
+
     if (loading) {
-        // スタイルは globals.css 次第
-        return <h1 className="page-title">読み込み中...</h1>;
+        return <h1 className={pageTitleStyles}>読み込み中...</h1>;
     }
 
     if (error) {
-         // スタイルは globals.css 次第 (例: text-red-500 の代わりのクラス)
-        return <h1 className="page-title error-message">{error}</h1>; // error-message クラスを CSS で定義
+        return <h1 className={errorStyles}>{error}</h1>;
     }
 
     if (!loginUserEmail || loginUserEmail !== email) {
-        // スタイルは globals.css 次第
-        return <h1 className="page-title error-message">このアイテムを削除する権限がありません。ログインしてください。</h1>;
+        return <h1 className={errorStyles}>このアイテムを削除する権限がありません。ログインしてください。</h1>;
     }
 
     return (
-        // delete-page クラスを適用
-        <div className="delete-page">
-            <h1 className="page-title">アイテム削除確認</h1>
-            {/* 中身の text-center は .delete-page に移動 */}
+        // ★ .delete-page スタイル
+        <div className="max-w-[600px] my-10 mx-auto text-center p-5 border border-[#eee] rounded-[10px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]">
+            <h1 className={pageTitleStyles}>アイテム削除確認</h1>
             <div>
                 {image && (
                     <Image
@@ -137,18 +148,21 @@ const DeleteItem = ({ params: paramsPromise }: { params: Promise<{ id: string }>
                         height={300}
                         alt={title || "item image"}
                         priority
-                        // className削除
+                        // ★ img スタイル (globals.css の .delete-page img)
+                        className="rounded-[10px] max-w-full h-auto mb-[15px]"
                     />
                 )}
-                {/* スタイルは globals.css の h2, h3, p に依存 */}
-                <h2>{title ?? 'タイトルなし'}</h2>
-                <h3>￥{price ?? '価格未定'}</h3>
-                <p className="description">{description ?? '説明なし'}</p> {/* クラス追加 */}
+                {/* ★ h2 スタイル (globals.css の .delete-page h2) */}
+                <h2 className="my-2.5 text-2xl leading-[30px] font-normal">{title ?? 'タイトルなし'}</h2>
+                {/* ★ h3 (price) スタイル (globals.css の .delete-page h3) */}
+                <h3 className="text-xl font-bold text-[#555] mb-2.5">￥{price ?? '価格未定'}</h3>
+                {/* ★ p.description スタイル (globals.css の .delete-page p.description) */}
+                <p className="mb-5 text-[#666]">{description ?? '説明なし'}</p>
                 <form onSubmit={handleSubmit}>
-                    {/* 警告文 */}
-                    <p className="warning">本当にこのアイテムを削除しますか？<br/>この操作は元に戻せません。</p> {/* クラス追加 */}
-                    {/* ボタンのスタイルは globals.css の .delete-page button に依存 */}
-                    <button type="submit">削除する</button>
+                    {/* ★ p.warning スタイル (globals.css の .delete-page p.warning) */}
+                    <p className="text-red-600 font-bold mb-[15px]">本当にこのアイテムを削除しますか？<br/>この操作は元に戻せません。</p>
+                    {/* ★ button スタイル */}
+                    <button type="submit" className={deleteButtonStyles}>削除する</button>
                 </form>
             </div>
         </div>

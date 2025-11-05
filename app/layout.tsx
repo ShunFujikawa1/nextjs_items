@@ -2,6 +2,14 @@
 import "./globals.css";
 import Header from "./components/header";
 import Footer from "./components/footer";
+import { Noto_Sans_JP } from 'next/font/google'; // ★ フォントをインポート
+
+// ★ フォントをインスタンス化
+const notoSansJp = Noto_Sans_JP({
+  subsets: ['latin'], // 'japanese' も利用可能です
+  weight: ['300', '400'], // 必要なウェイト
+  display: 'swap',
+});
 
 export const metadata = {
   title: 'Next Market',
@@ -10,11 +18,15 @@ export const metadata = {
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="ja">
-      <body>
-        {/* divのラッパーは不要 */}
+    // ★ フォントクラスを<html>に適用
+    <html lang="ja" className={notoSansJp.className}>
+      {/* ★ <body>にベーススタイルを適用 (max-w, mx-auto, px, font-weight, color) */}
+      <body className="font-light text-[#333] max-w-[1100px] mx-auto px-[15px]">
         <Header />
-        <main> {/* 特別なクラスは不要 */}
+        {/* ★ <main>にデフォルトのテキストスタイルを適用 
+          (font-size: 18px, line-height: 35px)
+        */}
+        <main className="text-lg leading-[35px]">
           {children}
         </main>
         <Footer />

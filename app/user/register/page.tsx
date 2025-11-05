@@ -29,26 +29,23 @@ const Register = () => {
     }
   };
 
+  // ★ フォームスタイル (globals.css の input, button, .page-title)
+  const inputStyles = "w-full p-[5px] mb-5 border border-[#ccc] rounded-[5px] box-border text-base font-inherit";
+  const buttonStyles = "bg-[#858585] text-base text-white p-[6px] border-none rounded-[5px] cursor-pointer w-full opacity-80-hover bg-gradient-to-br-hover from-[#FF63A4]-hover to-[#FFD873]-hover";
+  const pageTitleStyles = "text-3xl font-normal leading-[35px] mt-[30px] mb-10 text-center";
+
   return (
-    // divのラッパーはあっても良いが、スタイルクラスは削除
     <div>
-      <h1 className="page-title">ユーザー登録</h1>
-      {/* フォーム要素のスタイルは globals.css から適用される */}
+      <h1 className={pageTitleStyles}>ユーザー登録</h1>
       <form onSubmit={handleSubmit}>
-         {/* labelを追加しても良いが、スタイルはglobals.css次第 */}
-         {/*
-         <label htmlFor="name">ユーザー名</label>
-         */}
         <input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="ユーザー名"
           required
+          className={inputStyles}
         />
-        {/*
-        <label htmlFor="email">メールアドレス</label>
-         */}
         <input
           id="email"
           type="email"
@@ -56,10 +53,8 @@ const Register = () => {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="メールアドレス"
           required
+          className={inputStyles}
         />
-        {/*
-        <label htmlFor="password">パスワード</label>
-         */}
         <input
           id="password"
           type="password"
@@ -67,8 +62,9 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="パスワード"
           required
+          className={inputStyles}
         />
-        <button type="submit">登録</button>
+        <button type="submit" className={buttonStyles}>登録</button>
       </form>
     </div>
   );
