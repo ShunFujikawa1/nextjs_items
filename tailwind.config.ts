@@ -1,3 +1,2 @@
- @import "tailwindcss";
-/* Note: You may need to change the path to fit your project structure */
- @config "../../tailwind.config.js";
+const config = {};
+export default config;
